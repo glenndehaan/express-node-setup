@@ -47,6 +47,11 @@ app.use((req, res) => {
 });
 
 /**
+ * Disable powered by header for security reasons
+ */
+app.disable('x-powered-by');
+
+/**
  * Start listening on port
  */
 app.listen(config.application.port, config.application.bind, () => {
