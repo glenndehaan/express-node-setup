@@ -3,6 +3,9 @@
  */
 const config = {
     application: {
+        name: "NodeExpress",
+        env: " (local)",
+        basePath: "/",
         port: 3001,
         bind: "0.0.0.0"
     },

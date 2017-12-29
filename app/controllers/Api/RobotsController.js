@@ -1,11 +1,17 @@
 const baseController = require('./BaseController');
 const Robot = require('../../collections/Robot');
 
-class IndexController extends baseController {
+class RobotsController extends baseController {
     constructor() {
         super();
     }
 
+    /**
+     * Action to return all robots
+     *
+     * @param req
+     * @param res
+     */
     indexAction(req, res) {
         Robot.find((err, robots) => {
             if (err)
@@ -15,6 +21,12 @@ class IndexController extends baseController {
         });
     }
 
+    /**
+     * Action to create a robot
+     *
+     * @param req
+     * @param res
+     */
     createAction(req, res) {
         let robot = new Robot();
         robot.name = req.body.name;
@@ -27,6 +39,12 @@ class IndexController extends baseController {
         });
     }
 
+    /**
+     * Action to return one robot
+     *
+     * @param req
+     * @param res
+     */
     getOneAction(req, res) {
         Robot.findOne({name: req.params.id}, (err, robot) => {
             if (err)
@@ -36,6 +54,12 @@ class IndexController extends baseController {
         });
     }
 
+    /**
+     * Action to delete a robot
+     *
+     * @param req
+     * @param res
+     */
     deleteAction(req, res) {
         Robot.remove({ _id: req.params.id }, (err, robot) => {
             if (err)
@@ -46,4 +70,4 @@ class IndexController extends baseController {
     }
 }
 
-module.exports = new IndexController();
+module.exports = new RobotsController();

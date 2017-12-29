@@ -12,6 +12,7 @@ const mongoose = require('mongoose');
 const config = require('./config/config');
 const webRouter = require('./routers/Web');
 const apiRouter = require('./routers/Api');
+const indexController = require('./controllers/Web/IndexController');
 
 /**
  * Set template engine
@@ -42,8 +43,8 @@ app.use((req, res) => {
         res.send({ error: 'This API route is not implemented yet' });
         return;
     }
-    
-    res.send('Not found');
+
+    indexController.notFoundAction(req, res);
 });
 
 /**
