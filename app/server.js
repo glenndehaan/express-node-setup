@@ -4,6 +4,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const session = require('express-session');
 const mongoose = require('mongoose');
 
 /**
@@ -21,16 +22,36 @@ app.set('view engine', 'ejs');
 app.set('views', `${__dirname}/views`);
 
 /**
+ * Serve static public dir
+ */
+app.use(express.static(`${__dirname}/../public`));
+
+/**
  * Configure app to use bodyParser()
  */
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+
+/**
+ * Configure sessions in app
+ */
+app.use(session({secret: config.session.secret, resave: true, saveUninitialized: true}));
 
 /**
  * Configure routers
  */
-app.use('/', webRouter);
-app.use('/api', apiRouter);
+app.use('/', webRouter.router);
+app.use('/api', apiRouter.router);
+
+/**
+ * Render sitemap.xml and robots.txt
+ */
+app.get('/sitemap.xml', (req, res) => {
+    indexController.siteMapAction(req, res, webRouter.routes);
+});
+app.get('/robots.txt', (req, res) => {
+    indexController.robotsAction(req, res);
+});
 
 /**
  * Setup default 404 message
@@ -40,7 +61,11 @@ app.use((req, res) => {
 
     // respond with json
     if (req.originalUrl.split('/')[1] === 'api') {
-        res.send({ error: 'This API route is not implemented yet' });
+
+        /**
+         * API 404 not found
+         */
+        res.send({error: 'This API route is not implemented yet'});
         return;
     }
 
@@ -55,17 +80,39 @@ app.disable('x-powered-by');
 /**
  * Start listening on port
  */
-app.listen(config.application.port, config.application.bind, () => {
-    console.log(`Node app is running on: ${config.application.bind}:${config.application.port}`);
+const server = app.listen(config.application.port, config.application.bind, () => {
+    console.log(`[NODE] App is running on: ${config.application.bind}:${config.application.port}`);
 });
 
 /**
  * Configure mongo
  */
-if(typeof config.mongo !== "undefined"){
-    if(config.mongo.auth) {
-        mongoose.connect(`mongodb://${config.mongo.username}:${config.mongo.password}@${config.mongo.host}:${config.mongo.port}/${config.mongo.database}?authSource=admin`);
-    }else{
-        mongoose.connect(`mongodb://${config.mongo.host}:${config.mongo.port}/${config.mongo.database}`);
+if (typeof config.mongo !== "undefined") {
+    if (config.mongo.auth) {
+        mongoose.connect(`mongodb://${config.mongo.username}:${config.mongo.password}@${config.mongo.host}:${config.mongo.port}/${config.mongo.database}?authSource=admin`, (err) => {
+            if (err) {
+                console.log(`[MONGO] Error while connecting: ${err}`)
+            } else {
+                console.log(`[MONGO] Mongo connection successful!`);
+            }
+        });
+    } else {
+        mongoose.connect(`mongodb://${config.mongo.host}:${config.mongo.port}/${config.mongo.database}`, (err) => {
+            if (err) {
+                console.log(`[MONGO] Error while connecting: ${err}`)
+            } else {
+                console.log(`[MONGO] Mongo connection successful!`);
+            }
+        });
     }
 }
+
+/**
+ * Handle nodemon shutdown
+ */
+process.once('SIGUSR2', () => {
+    server.close(() => {
+        console.log(`[NODE] Express exited! Port ${config.application.port} is now free!`);
+        process.kill(process.pid, 'SIGUSR2');
+    });
+});

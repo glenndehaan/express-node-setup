@@ -33,6 +33,36 @@ class IndexController extends baseController {
             pageTitle: 'Not Found'
         }));
     }
+
+    /**
+     * Renders the sitemap.xml
+     *
+     * @param req
+     * @param res
+     * @param routes
+     */
+    siteMapAction(req, res, routes) {
+        res.type("application/xml");
+        res.render('general/sitemap', this.mergePageConfig(req, {
+            template: false,
+            pageTitle: false,
+            routes: routes
+        }));
+    }
+
+    /**
+     * Renders the robots.txt
+     *
+     * @param req
+     * @param res
+     */
+    robotsAction(req, res) {
+        res.type("text/plain");
+        res.render('general/robots', this.mergePageConfig(req, {
+            template: false,
+            pageTitle: false
+        }));
+    }
 }
 
 module.exports = new IndexController();

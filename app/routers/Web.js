@@ -19,4 +19,4 @@ const routes = [
 
 routerUtils.routesToRouter(router, routes, 'Web');
 
-module.exports = router;
+module.exports = {router, routes};

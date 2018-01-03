@@ -10,12 +10,15 @@ const config = {
         bind: "0.0.0.0"
     },
     mongo: {
-        host: "127.0.0.1",
+        host: "prototype.dev",
         port: 27017,
-        auth: false,
+        auth: true,
         username: "root",
         password: "root",
         database: "express-node-setup"
+    },
+    session: {
+        secret: "averysecretstring"
     }
 };
 
