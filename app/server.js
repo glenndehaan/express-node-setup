@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const browsersupport = require('express-browsersupport');
 const mongoose = require('mongoose');
 
 /**
@@ -38,6 +39,14 @@ app.use(bodyParser.json());
 app.use(session({secret: config.session.secret, resave: true, saveUninitialized: true}));
 
 /**
+ * Configure app to use Browser Support
+ */
+app.use(browsersupport({
+    redirectUrl: "/oldbrowser",
+    supportedBrowsers: config.application.supportedBrowsers
+}));
+
+/**
  * Configure routers
  */
 app.use('/', webRouter.router);
@@ -51,6 +60,13 @@ app.get('/sitemap.xml', (req, res) => {
 });
 app.get('/robots.txt', (req, res) => {
     indexController.robotsAction(req, res);
+});
+
+/**
+ * Render old browser page
+ */
+app.get('/oldbrowser', (req, res) => {
+    indexController.oldBrowserAction(req, res);
 });
 
 /**

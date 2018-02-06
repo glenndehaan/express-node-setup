@@ -35,6 +35,19 @@ class IndexController extends baseController {
     }
 
     /**
+     * Renders the old browser page (Fallback page)
+     *
+     * @param req
+     * @param res
+     */
+    oldBrowserAction(req, res) {
+        res.render('index', this.mergePageConfig(req, {
+            template: 'general/oldbrowser',
+            pageTitle: 'Old Browser'
+        }));
+    }
+
+    /**
      * Renders the sitemap.xml
      *
      * @param req
