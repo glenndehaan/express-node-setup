@@ -4,6 +4,7 @@ class BaseController {
     constructor() {
         this.baseConfig = {
             config: config,
+            protocol: '',
             hostname: '',
             baseUrl: ''
         }
@@ -16,8 +17,9 @@ class BaseController {
      * @param pageSpecificConfig
      */
     mergePageConfig(request, pageSpecificConfig) {
-        this.baseConfig.hostname = request.hostname;
-        this.baseConfig.baseUrl = `${request.protocol}://${request.hostname}${config.application.basePath}`;
+        this.baseConfig.hostname = request.get('host');
+        this.baseConfig.protocol = request.protocol;
+        this.baseConfig.baseUrl = `${request.protocol}://${request.get('host')}${config.application.basePath}`;
 
         return Object.assign(this.baseConfig, pageSpecificConfig);
     }
